@@ -4,7 +4,6 @@ import numpy as np
 import pickle #for saving and loading ML models
 from sklearn.linear_model import LinearRegression
 import time
-pip install -r requirements.txt
 os.environ["LANGSMITH_API_KEY"] = getpass.getpass("Enter your LangSmith API key: ")
 os.environ["LANGSMITH_TRACING"] = "true"
 
