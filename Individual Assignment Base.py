@@ -10,7 +10,7 @@ os.environ["LANGSMITH_TRACING"] = "true"
 # =============================================================================
 # Your Market Research Tool on Wikipedia 
 # =============================================================================
-st.header("Wikipedia Tool")
+st.header("Your Market Research Tool on Wikipedia")
 from langchain_community.retrievers import WikipediaRetriever
 
 retriever = WikipediaRetriever(top_k_results=5)
@@ -28,18 +28,17 @@ if query:
             st.write(doc.page_content)
 
 # Search button
-if st.button("Search") and query:
-    with st.spinner("Searching Wikipedia..."):
-        docs = retriever.invoke(query)
-    
-    st.write(f"### Results for: *{query}*")
-    for i, doc in enumerate(docs, 1):
-        with st.expander(f"Result {i}: {doc.metadata.get('title', 'No title')}"):
-            st.write(doc.page_content)
-
-elif st.button and not query:
-    st.warning("Please enter a search term first!")
-
+if st.button("Search"):
+    if query:
+        with st.spinner("Searching Wikipedia..."):
+            docs = retriever.invoke(query)
+        
+        st.write(f"### Results for: *{query}*")
+        for i, doc in enumerate(docs, 1):
+            with st.expander(f"Result {i}: {doc.metadata.get('title', 'No title')}"):
+                st.write(doc.page_content)
+    else:
+        st.warning("Please enter a search term first!")
 
 # Sidebar for settings
 st.sidebar.header("Chatbot Settings")
