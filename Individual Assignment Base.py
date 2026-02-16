@@ -8,57 +8,15 @@ os.environ["LANGSMITH_API_KEY"] = st.secrets["LANGSMITH_API_KEY"]
 os.environ["LANGSMITH_TRACING"] = "true"
 
 # =============================================================================
-# PART 1: TEXT & INPUTS
+# Your Market Research Tool on Wikipedia 
 # =============================================================================
-st.title("Your Wikipedia Tool")
-st.header("1. Text & Inputs")
-# same as 
-st.write("### 1. Text & Inputs, but written in Markdown")
-
-# Basic text display
-st.write("Hello, this is `st.write()`")
-st.markdown("This is **bold** and *italic*")
-
-# Text input - returns string, empty string if nothing entered
-name = st.text_input("Your name please here")
-if name:
-    st.write(f"Hello, {name}!")
-
-# Number input - returns int/float
-age = st.number_input("Your age", min_value=0,
-                       max_value=120, 
-                       value=25)
-# st.write(age)
-# Slider - returns int/float
-score = st.slider("Pick a score", 0, 100, 50)
-
-st.write(f"Age: {age}, Score: {score}")
-
-# splitting the screen into three columns
-col1, col2, col3 = st.columns(3)
-
-with col1:
-    if st.button("Click me"):
-        st.write("Clicked!")
-
-with col2:
-    checked = st.checkbox("Enable feature")
-    if checked:
-        st.write("Enabled")
-
-with col3:
-    st.metric("Score", 95)
-
-# =============================================================================
-# PART 2: TRAIN & SAVE MODEL
-# =============================================================================
-st.header("2. Train & Save Model")
+st.header("Wikipedia Tool")
 from langchain_community.retrievers import WikipediaRetriever
 
 retriever = WikipediaRetriever(top_k_results=5)
 
 # Text box for user input
-query = st.text_input("Search Wikipedia", placeholder="e.g. Eiffel Tower")
+query = st.text_input("Search Wikipedia", placeholder="Type your input here")
 
 if query:
     with st.spinner("Searching Wikipedia..."):
@@ -69,15 +27,19 @@ if query:
         with st.expander(f"Result {i}: {doc.metadata.get('title', 'No title')}"):
             st.write(doc.page_content)
 
-# =============================================================================
-# PART 3: LOAD & PREDICT
-# =============================================================================
-st.header("3. Load & Predict")
+# Search button
+if st.button("Search") and query:
+    with st.spinner("Searching Wikipedia..."):
+        docs = retriever.invoke(query)
+    
+    st.write(f"### Results for: *{query}*")
+    for i, doc in enumerate(docs, 1):
+        with st.expander(f"Result {i}: {doc.metadata.get('title', 'No title')}"):
+            st.write(doc.page_content)
 
+elif st.button and not query:
+    st.warning("Please enter a search term first!")
 
-# =============================================================================
-# PART 4: CHATBOT
-# =============================================================================
 
 # Sidebar for settings
 st.sidebar.header("Chatbot Settings")
