@@ -1,7 +1,6 @@
 import streamlit as st
-import pickle #for saving and loading ML models
-import time
 import os
+from langchain_community.retrievers import WikipediaRetriever
 
 # Load from Streamlit Secrets (Streamlit Cloud)
 os.environ["LANGSMITH_API_KEY"] = st.secrets["LANGSMITH_API_KEY"]
