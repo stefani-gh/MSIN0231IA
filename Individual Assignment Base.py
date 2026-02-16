@@ -6,7 +6,7 @@ import time
 import os
 
 # Load from Streamlit Secrets (Streamlit Cloud)
-os.environ["LANGSMITH_API_KEY"] = st.secrets["LANGSMITH_API_KEY"]
+os.environ["LANGSMITH_API_KEY"] = st.secrets["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"]
 os.environ["LANGSMITH_TRACING"] = st.secrets.get("LANGSMITH_TRACING", "true")
 
 # =============================================================================
