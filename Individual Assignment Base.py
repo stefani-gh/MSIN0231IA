@@ -5,12 +5,12 @@ import os
 
 # Load from Streamlit Secrets (Streamlit Cloud)
 os.environ["LANGSMITH_API_KEY"] = st.secrets["LANGSMITH_API_KEY"]
-os.environ["LANGSMITH_TRACING"] = st.secrets.get("LANGSMITH_TRACING", "true")
+os.environ["LANGSMITH_TRACING"] = "true"
 
 # =============================================================================
 # PART 1: TEXT & INPUTS
 # =============================================================================
-st.title("Streamlit Demo 222")
+st.title("Your Wikipedia Tool")
 st.header("1. Text & Inputs")
 # same as 
 st.write("### 1. Text & Inputs, but written in Markdown")
@@ -53,6 +53,21 @@ with col3:
 # PART 2: TRAIN & SAVE MODEL
 # =============================================================================
 st.header("2. Train & Save Model")
+from langchain_community.retrievers import WikipediaRetriever
+
+retriever = WikipediaRetriever(top_k_results=5)
+
+# Text box for user input
+query = st.text_input("Search Wikipedia", placeholder="e.g. Eiffel Tower")
+
+if query:
+    with st.spinner("Searching Wikipedia..."):
+        docs = retriever.invoke(query)
+    
+    st.write(f"### Results for: *{query}*")
+    for i, doc in enumerate(docs, 1):
+        with st.expander(f"Result {i}: {doc.metadata.get('title', 'No title')}"):
+            st.write(doc.page_content)
 
 # =============================================================================
 # PART 3: LOAD & PREDICT
