@@ -1,12 +1,10 @@
 import streamlit as st
-import pandas as pd
-import numpy as np
 import pickle #for saving and loading ML models
 import time
 import os
 
 # Load from Streamlit Secrets (Streamlit Cloud)
-os.environ["LANGSMITH_API_KEY"] = st.secrets["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"]
+os.environ["LANGSMITH_API_KEY"] = st.secrets["LANGSMITH_API_KEY"]
 os.environ["LANGSMITH_TRACING"] = st.secrets.get("LANGSMITH_TRACING", "true")
 
 # =============================================================================
@@ -56,36 +54,11 @@ with col3:
 # =============================================================================
 st.header("2. Train & Save Model")
 
-# Generate dummy data: y = 2.5x + noise
-np.random.seed(42)
-X = np.random.rand(100, 1) * 10
-y = 2.6 * X.squeeze() + np.random.randn(100) * 2
-
-df = pd.DataFrame({"x": X.squeeze(), "y": y})
-st.dataframe(df.head())  # Interactive table
-st.line_chart(df.set_index("x"))  # Quick chart
-
-# Button returns True when clicked, triggers rerun
-if st.button("Train & Save Model"):
-    model = LinearRegression()
-    model.fit(X, y)
-    with open("model.pkl", "wb") as f:
-        pickle.dump(model, f)
-    st.success(f"Model saved! Coefficient: {model.coef_[0]:.2f}")
-
 # =============================================================================
 # PART 3: LOAD & PREDICT
 # =============================================================================
 st.header("3. Load & Predict")
 
-try:
-    with open("model.pkl", "rb") as f:
-        model = pickle.load(f)
-    x_input = st.number_input("Enter X value", value=5.0)
-    prediction = model.predict([[x_input]])[0]
-    st.metric("Prediction", f"{prediction:.2f}")  # Big number display
-except FileNotFoundError:
-    st.warning("Train the model first")
 
 # =============================================================================
 # PART 4: CHATBOT
