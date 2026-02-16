@@ -31,11 +31,16 @@ if "wiki_results" in st.session_state:
     docs = st.session_state.wiki_results
     if docs:
         st.write(f"### Results for: *{st.session_state.wiki_query}*")
+        if len(docs) < 5:
+            st.info(f"Only {len(docs)} result(s) found. Try other terms for more results.")
         for i, doc in enumerate(docs, 1):
             with st.expander(f"Result {i}: {doc.metadata.get('title', 'No title')}"):
                 st.write(doc.page_content)
     else:
         st.info("No results found. Try a different search term.")
+
+st.header("Industry Report")
+
 
 # Sidebar for settings
 st.sidebar.header("Chatbot Settings")
