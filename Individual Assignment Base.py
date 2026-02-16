@@ -3,8 +3,11 @@ import pandas as pd
 import numpy as np
 import pickle #for saving and loading ML models
 import time
-os.environ["LANGSMITH_API_KEY"] = getpass.getpass("Enter your LangSmith API key: ")
-os.environ["LANGSMITH_TRACING"] = "true"
+import os
+
+# Load from Streamlit Secrets (Streamlit Cloud)
+os.environ["LANGSMITH_API_KEY"] = st.secrets["LANGSMITH_API_KEY"]
+os.environ["LANGSMITH_TRACING"] = st.secrets.get("LANGSMITH_TRACING", "true")
 
 # =============================================================================
 # PART 1: TEXT & INPUTS
