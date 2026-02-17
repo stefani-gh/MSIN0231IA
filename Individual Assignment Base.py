@@ -12,7 +12,7 @@ os.environ["LANGSMITH_TRACING"] = "true"
 # Sidebar for settings
 st.sidebar.header("LLM Settings")
 model = st.sidebar.selectbox("Model", ["ChatGPT5.2", "Gemini", "Copilot"])
-api_key = st.sidebar.text_input("Please enter your OpenAI API key", type="password")
+gemini_api_key = st.sidebar.text_input("Please enter your  API key", type="password")
 
 # =============================================================================
 # Your Market Research Tool on Wikipedia 
@@ -39,7 +39,7 @@ if "wiki_results" in st.session_state:
     if docs:
         st.write(f"### Results for: *{st.session_state.wiki_query}*")
         if len(docs) < 5:
-            st.info(f"Only {len(docs)} result(s) found. Try a more specific query for more results.")
+            st.info(f"Only {len(docs)} result(s) found. Please try another term for more results.")
         for i, doc in enumerate(docs, 1):
             title = doc.metadata.get('title', 'No title')
             url = doc.metadata.get('source', '')
@@ -49,17 +49,6 @@ if "wiki_results" in st.session_state:
                 st.write(f"**{i}. {title}** — URL not available")
     else:
         st.info("No results found. Try a different search term.")
-
-# if st.button("Search"):
-#     if query:
-#         try:
-#             with st.spinner("Searching Wikipedia..."):
-#                 st.session_state.wiki_results = retriever.invoke(query)
-#                 st.session_state.wiki_query = query
-#         except Exception:
-#             st.error("Failed to fetch Wikipedia results. Please try again in a moment.")
-#     else:
-#         st.warning("Please enter a search term first!")
 
 # =============================================================================
 # Industry Report 
@@ -83,7 +72,6 @@ if "wiki_results" in st.session_state and st.session_state.wiki_results:
                 # ✅ Fixed model: gemini-1.5-flash (fast and free tier available)
                 llm = ChatGoogleGenerativeAI(
                     model="gemini-1.5-flash",
-                    temperature=temperature,
                     google_api_key=gemini_api_key
                 )
 
