@@ -64,12 +64,10 @@ if "wiki_results" in st.session_state and st.session_state.wiki_results:
                 from langchain_google_genai import ChatGoogleGenerativeAI
                 from langchain.schema import HumanMessage, SystemMessage
 
-                # Combine all Wikipedia results into one text
                 combined_text = "\n\n".join(
                     [doc.page_content for doc in st.session_state.wiki_results]
                 )
 
-                # ✅ Fixed model: gemini-1.5-flash (fast and free tier available)
                 llm = ChatGoogleGenerativeAI(
                     model="gemini-1.5-flash",
                     google_api_key=gemini_api_key
