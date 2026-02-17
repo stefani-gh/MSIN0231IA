@@ -69,7 +69,7 @@ if "wiki_results" in st.session_state and st.session_state.wiki_results:
                 )
 
                 llm = ChatGoogleGenerativeAI(
-                    model="gemini-1.5-flash",
+                    model="gemini-2.0-flash",
                     google_api_key=gemini_api_key
                 )
 
@@ -93,4 +93,4 @@ if "wiki_results" in st.session_state and st.session_state.wiki_results:
 if "summary" in st.session_state:
     st.write("### 📊 Market Research Summary")
     st.write(st.session_state.summary)
-    st.caption(f"Word count: {len(st.session_state.summary.split())} | Powered by Gemini 1.5 Flash")
+    st.caption(f"Word count: {len(st.session_state.summary.split())} | Powered by Gemini 2.0 Flash")
