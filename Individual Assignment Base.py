@@ -15,13 +15,25 @@ retriever = WikipediaRetriever(top_k_results=5)
 # Text box for user input
 query = st.text_input("Search Wikipedia", placeholder="Type your input here")
 
-if query:
-    with st.spinner("Searching Wikipedia..."):
-        docs = retriever.invoke(query)
-    print(docs[0].page_content[:400])
+if st.button("Search"):
+    if query:
+        try:
+            with st.spinner("Searching Wikipedia..."):
+                st.session_state.wiki_results = retriever.invoke(query)  # ✅ same as docs
+                st.session_state.wiki_query = query
+        except Exception as e:
+            st.error(f"Error: {str(e)}")
+    else:
+        st.warning("Please enter a search term first!")
 
-
-# query = st.text_input("Search Wikipedia", placeholder="Type your input here")
+if "wiki_results" in st.session_state:
+    docs = st.session_state.wiki_results
+    for i, doc in enumerate(docs, 1):
+        with st.expander(f"Result {i}: {doc.metadata.get('title', 'No title')}"):
+            st.write(doc.page_content[:400])  # ✅ st.write instead of print
+            url = doc.metadata.get('source', '')
+            if url:
+                st.markdown(f"🔗 [Read on Wikipedia]({url})")
 
 # if st.button("Search"):
 #     if query:
