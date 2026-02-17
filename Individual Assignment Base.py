@@ -22,8 +22,8 @@ if st.button("Search"):
             with st.spinner("Searching Wikipedia..."):
                 st.session_state.wiki_results = retriever.invoke(query)
                 st.session_state.wiki_query = query
-        except Exception:
-            st.error("Failed to fetch Wikipedia results. Please try again in a moment.")
+        except Exception as e:
+            st.error(f"Error: {str(e)}")  # ✅ Show the actual error instead of generic message
     else:
         st.warning("Please enter a search term first!")
 
