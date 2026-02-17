@@ -11,15 +11,15 @@ os.environ["LANGSMITH_TRACING"] = "true"
 # =============================================================================
 st.header("Your Market Research Tool on Wikipedia")
 
-retriever = WikipediaRetriever(top_k_results=5)
-# Text box for user input
+retriever = WikipediaRetriever()
+
 query = st.text_input("Search Wikipedia", placeholder="Type your input here")
 
 if st.button("Search"):
     if query:
         try:
             with st.spinner("Searching Wikipedia..."):
-                st.session_state.wiki_results = retriever.invoke(query)  # ✅ same as docs
+                st.session_state.wiki_results = retriever.invoke(query)
                 st.session_state.wiki_query = query
         except Exception as e:
             st.error(f"Error: {str(e)}")
@@ -28,12 +28,19 @@ if st.button("Search"):
 
 if "wiki_results" in st.session_state:
     docs = st.session_state.wiki_results
-    for i, doc in enumerate(docs, 1):
-        with st.expander(f"Result {i}: {doc.metadata.get('title', 'No title')}"):
-            st.write(doc.page_content[:400])  # ✅ st.write instead of print
+    if docs:
+        st.write(f"### Results for: *{st.session_state.wiki_query}*")
+        if len(docs) < 5:
+            st.info(f"Only {len(docs)} result(s) found. Try a more specific query for more results.")
+        for i, doc in enumerate(docs, 1):
+            title = doc.metadata.get('title', 'No title')
             url = doc.metadata.get('source', '')
             if url:
-                st.markdown(f"🔗 [Read on Wikipedia]({url})")
+                st.markdown(f"**{i}. [{title}]({url})**")
+            else:
+                st.write(f"**{i}. {title}** — URL not available")
+    else:
+        st.info("No results found. Try a different search term.")
 
 # if st.button("Search"):
 #     if query:
@@ -45,19 +52,6 @@ if "wiki_results" in st.session_state:
 #             st.error("Failed to fetch Wikipedia results. Please try again in a moment.")
 #     else:
 #         st.warning("Please enter a search term first!")
-
-# Display results from session state (persists across reruns without duplicating)
-if "wiki_results" in st.session_state:
-    docs = st.session_state.wiki_results
-    if docs:
-        st.write(f"### Results for: *{st.session_state.wiki_query}*")
-        if len(docs) < 5:
-            st.info(f"Only {len(docs)} result(s) found. Try other terms for more results.")
-        for i, doc in enumerate(docs, 1):
-            with st.expander(f"Result {i}: {doc.metadata.get('title', 'No title')}"):
-                st.write(doc.page_content)
-    else:
-        st.info("No results found. Try a different search term.")
 
 # =============================================================================
 # Industry Report 
