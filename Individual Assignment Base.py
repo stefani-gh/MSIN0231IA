@@ -12,19 +12,31 @@ os.environ["LANGSMITH_TRACING"] = "true"
 st.header("Your Market Research Tool on Wikipedia")
 
 retriever = WikipediaRetriever(top_k_results=5)
-
+# Text box for user input
 query = st.text_input("Search Wikipedia", placeholder="Type your input here")
 
-if st.button("Search"):
-    if query:
-        try:
-            with st.spinner("Searching Wikipedia..."):
-                st.session_state.wiki_results = retriever.invoke(query)
-                st.session_state.wiki_query = query
-        except Exception:
-            st.error("Failed to fetch Wikipedia results. Please try again in a moment.")
-    else:
-        st.warning("Please enter a search term first!")
+if query:
+    with st.spinner("Searching Wikipedia..."):
+        docs = retriever.invoke(query)
+    
+    st.write(f"### Results for: *{query}*")
+    for i, doc in enumerate(docs, 1):
+        with st.expander(f"Result {i}: {doc.metadata.get('title', 'No title')}"):
+            st.write(doc.page_content)
+
+
+# query = st.text_input("Search Wikipedia", placeholder="Type your input here")
+
+# if st.button("Search"):
+#     if query:
+#         try:
+#             with st.spinner("Searching Wikipedia..."):
+#                 st.session_state.wiki_results = retriever.invoke(query)
+#                 st.session_state.wiki_query = query
+#         except Exception:
+#             st.error("Failed to fetch Wikipedia results. Please try again in a moment.")
+#     else:
+#         st.warning("Please enter a search term first!")
 
 # Display results from session state (persists across reruns without duplicating)
 if "wiki_results" in st.session_state:
