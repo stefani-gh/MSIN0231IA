@@ -10,36 +10,34 @@ os.environ["LANGSMITH_TRACING"] = "true"
 # Settings of the Market Reserach Tool
 # =============================================================================
 # Sidebar for settings
-st.sidebar.header("LLM Settings")
-model = st.sidebar.selectbox("Model", ["ChatGPT5.2", "Gemini", "Copilot"])
+st.sidebar.header("⚙️ LLM Setting")
+model = st.sidebar.selectbox("Model", ["OpenAI", "Gemini", "Copilot"])
 gemini_api_key = st.sidebar.text_input("Please enter your  API key", type="password")
 
 # =============================================================================
-# Your Market Research Tool on Wikipedia 
+# Market Research Tool on Wikipedia 
 # =============================================================================
-st.header("Your Market Research Tool on Wikipedia")
+st.header("📃 Market Research Tool on Wikipedia")
 
 retriever = WikipediaRetriever()
 
-query = st.text_input("Search Wikipedia", placeholder="Type your input here")
+query = st.text_input("Search Wikipedia", placeholder="Type your industry here")
 
 if st.button("Search"):
     if query:
         try:
-            with st.spinner("Searching Wikipedia..."):
+            with st.spinner("🔍 Searching Wikipedia..."):
                 st.session_state.wiki_results = retriever.invoke(query)
                 st.session_state.wiki_query = query
         except Exception as e:
             st.error(f"Error: {str(e)}")
     else:
-        st.warning("Please enter a search term first!")
+        st.warning("⚠️ Please enter a search term first!")
 
 if "wiki_results" in st.session_state:
     docs = st.session_state.wiki_results
     if docs:
         st.write(f"### Results for: *{st.session_state.wiki_query}*")
-        if len(docs) < 5:
-            st.info(f"Only {len(docs)} result(s) found. Please try another term for more results.")
         for i, doc in enumerate(docs, 1):
             title = doc.metadata.get('title', 'No title')
             url = doc.metadata.get('source', '')
@@ -47,18 +45,20 @@ if "wiki_results" in st.session_state:
                 st.markdown(f"**{i}. [{title}]({url})**")
             else:
                 st.write(f"**{i}. {title}** — URL not available")
+        if len(docs) < 5:
+            st.info(f"⚠️ Only {len(docs)} result(s) found. Please try another term for more results.")
     else:
-        st.info("No results found. Try a different search term.")
+        st.info("⚠️ No results found. Try a different search term.")
 
 # =============================================================================
 # Industry Report 
 # =============================================================================
-st.header("Industry Report")
+st.header("📚 Industry Report")
 
 if "wiki_results" in st.session_state and st.session_state.wiki_results:
     if st.button("Summarize as Market Research"):
         if not gemini_api_key:
-            st.warning("Please enter your Gemini API key in the sidebar first!")
+            st.warning("⚠️ Please enter your API key in the setting first!")
         else:
             try:
                 from langchain_google_genai import ChatGoogleGenerativeAI
