@@ -18,11 +18,7 @@ query = st.text_input("Search Wikipedia", placeholder="Type your input here")
 if query:
     with st.spinner("Searching Wikipedia..."):
         docs = retriever.invoke(query)
-    
-    st.write(f"### Results for: *{query}*")
-    for i, doc in enumerate(docs, 1):
-        with st.expander(f"Result {i}: {doc.metadata.get('title', 'No title')}"):
-            st.write(doc.page_content)
+    print(docs[0].page_content[:400])
 
 
 # query = st.text_input("Search Wikipedia", placeholder="Type your input here")
