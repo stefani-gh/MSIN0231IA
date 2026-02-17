@@ -62,7 +62,7 @@ if "wiki_results" in st.session_state and st.session_state.wiki_results:
         else:
             try:
                 from langchain_google_genai import ChatGoogleGenerativeAI
-                from langchain.schema import HumanMessage, SystemMessage
+                from langchain_core.messages import HumanMessage, SystemMessage
 
                 combined_text = "\n\n".join(
                     [doc.page_content for doc in st.session_state.wiki_results]
