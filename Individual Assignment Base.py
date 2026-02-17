@@ -15,20 +15,19 @@ retriever = WikipediaRetriever(top_k_results=5)
 
 query = st.text_input("Search Wikipedia", placeholder="Type your input here")
 
-
 if st.button("Search"):
     if query:
         try:
             with st.spinner("Searching Wikipedia..."):
                 st.session_state.wiki_results = retriever.invoke(query)
                 st.session_state.wiki_query = query
-        except Exception as e:
-            st.error(f"Error: {str(e)}")  # ✅ Show the actual error instead of generic message
+        except Exception:
+            st.error("Failed to fetch Wikipedia results. Please try again in a moment.")
     else:
         st.warning("Please enter a search term first!")
 
 # Display results from session state (persists across reruns without duplicating)
-""" if "wiki_results" in st.session_state:
+if "wiki_results" in st.session_state:
     docs = st.session_state.wiki_results
     if docs:
         st.write(f"### Results for: *{st.session_state.wiki_query}*")
@@ -38,10 +37,10 @@ if st.button("Search"):
             with st.expander(f"Result {i}: {doc.metadata.get('title', 'No title')}"):
                 st.write(doc.page_content)
     else:
-        st.info("No results found. Try a different search term.") """
+        st.info("No results found. Try a different search term.")
 
 # =============================================================================
-# Industry Report
+# Industry Report 
 # =============================================================================
 
 st.header("Industry Report")
