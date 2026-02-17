@@ -7,6 +7,14 @@ os.environ["LANGSMITH_API_KEY"] = st.secrets["LANGSMITH_API_KEY"]
 os.environ["LANGSMITH_TRACING"] = "true"
 
 # =============================================================================
+# Settings of the Market Reserach Tool
+# =============================================================================
+# Sidebar for settings
+st.sidebar.header("LLM Settings")
+model = st.sidebar.selectbox("Model", ["ChatGPT5.2", "Gemini", "Copilot"])
+api_key = st.sidebar.text_input("Please enter your OpenAI API key", type="password")
+
+# =============================================================================
 # Your Market Research Tool on Wikipedia 
 # =============================================================================
 st.header("Your Market Research Tool on Wikipedia")
@@ -100,8 +108,3 @@ if "summary" in st.session_state:
     st.write("### 📊 Market Research Summary")
     st.write(st.session_state.summary)
     st.caption(f"Word count: {len(st.session_state.summary.split())} | Powered by Gemini 1.5 Flash")
-
-# Sidebar for settings
-st.sidebar.header("LLM Settings")
-model = st.sidebar.selectbox("Model", ["ChatGPT5.2", "Gemini", "Copilot"])
-api_key = st.sidebar.text_input("Please enter your OpenAI API key", type="password")
