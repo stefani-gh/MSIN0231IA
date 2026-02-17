@@ -56,16 +56,15 @@ if "wiki_results" in st.session_state:
 # =============================================================================
 # Industry Report 
 # =============================================================================
-
 st.header("Industry Report")
 
 if "wiki_results" in st.session_state and st.session_state.wiki_results:
     if st.button("Summarize as Market Research"):
-        if not api_key:
-            st.warning("Please enter your OpenAI API key in the sidebar first!")
+        if not gemini_api_key:
+            st.warning("Please enter your Gemini API key in the sidebar first!")
         else:
             try:
-                from langchain_openai import ChatOpenAI
+                from langchain_google_genai import ChatGoogleGenerativeAI
                 from langchain.schema import HumanMessage, SystemMessage
 
                 # Combine all Wikipedia results into one text
@@ -73,10 +72,11 @@ if "wiki_results" in st.session_state and st.session_state.wiki_results:
                     [doc.page_content for doc in st.session_state.wiki_results]
                 )
 
-                llm = ChatOpenAI(
-                    model=model,
+                # ✅ Fixed model: gemini-1.5-flash (fast and free tier available)
+                llm = ChatGoogleGenerativeAI(
+                    model="gemini-1.5-flash",
                     temperature=temperature,
-                    api_key=api_key
+                    google_api_key=gemini_api_key
                 )
 
                 messages = [
@@ -88,19 +88,18 @@ if "wiki_results" in st.session_state and st.session_state.wiki_results:
                     HumanMessage(content=f"Summarize this into a market research report:\n\n{combined_text}")
                 ]
 
-                with st.spinner("Generating market research summary..."):
+                with st.spinner("Generating market research report with Gemini..."):
                     response = llm.invoke(messages)
                     st.session_state.summary = response.content
 
             except Exception as e:
-                st.error(f"Failed to generate summary: {str(e)}")
+                st.error(f"Failed to generate report: {str(e)}")
 
 # Display summary
 if "summary" in st.session_state:
     st.write("### 📊 Market Research Summary")
     st.write(st.session_state.summary)
-    word_count = len(st.session_state.summary.split())
-    st.caption(f"Word count: {word_count}")
+    st.caption(f"Word count: {len(st.session_state.summary.split())} | Powered by Gemini 1.5 Flash")
 
 # Sidebar for settings
 st.sidebar.header("LLM Settings")
