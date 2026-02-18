@@ -1,10 +1,13 @@
 import streamlit as st
 import os
+import re
 from langchain_community.retrievers import WikipediaRetriever
 
 # Load from Streamlit Secrets (Streamlit Cloud)
-os.environ["LANGSMITH_API_KEY"] = st.secrets["LANGSMITH_API_KEY"]
-os.environ["LANGSMITH_TRACING"] = "true"
+langsmith_api_key = st.secrets.get("LANGSMITH_API_KEY")
+if langsmith_api_key:
+    os.environ["LANGSMITH_API_KEY"] = langsmith_api_key
+    os.environ["LANGSMITH_TRACING"] = "true"
 
 # =============================================================================
 # Settings of the Market Reserach Tool
@@ -13,11 +16,17 @@ os.environ["LANGSMITH_TRACING"] = "true"
 st.sidebar.header("⚙️ LLM Setting")
 model = st.sidebar.selectbox("Model", ["OpenAI", "Gemini", "Copilot"])
 gemini_api_key = st.sidebar.text_input("Please enter your  API key", type="password")
+default_gemini_api_key = st.secrets.get("GOOGLE_API_KEY", "")
+
+if model != "Gemini":
+    st.sidebar.info("Only Gemini is currently implemented. Please select Gemini to generate a report.")
 
 # =============================================================================
 # Market Research Tool on Wikipedia 
 # =============================================================================
 st.header("📃 Market Research Tool on Wikipedia")
+
+
 
 retriever = WikipediaRetriever()
 
@@ -29,6 +38,7 @@ if st.button("Search"):
             with st.spinner("🔍 Searching Wikipedia..."):
                 st.session_state.wiki_results = retriever.invoke(query)
                 st.session_state.wiki_query = query
+                st.session_state.pop("summary", None)
         except Exception as e:
             st.error(f"Error: {str(e)}")
     else:
@@ -56,8 +66,11 @@ if "wiki_results" in st.session_state:
 st.header("📚 Industry Report")
 
 if "wiki_results" in st.session_state and st.session_state.wiki_results:
-    if st.button("Summarize as Market Research"):
-        if not gemini_api_key:
+    if st.button("Generate Industry Report"):
+        api_key_to_use = gemini_api_key.strip() or default_gemini_api_key
+        if model != "Gemini":
+            st.warning("⚠️ Please select Gemini in the sidebar before generating the report.")
+        elif not api_key_to_use:
             st.warning("⚠️ Please enter your API key in the setting first!")
         else:
             try:
@@ -70,7 +83,7 @@ if "wiki_results" in st.session_state and st.session_state.wiki_results:
 
                 llm = ChatGoogleGenerativeAI(
                     model="gemini-2.0-flash",
-                    google_api_key=gemini_api_key
+                    google_api_key=api_key_to_use
                 )
 
                 messages = [
@@ -87,7 +100,20 @@ if "wiki_results" in st.session_state and st.session_state.wiki_results:
                     st.session_state.summary = response.content
 
             except Exception as e:
-                st.error(f"Failed to generate report: {str(e)}")
+                error_text = str(e)
+                if "RESOURCE_EXHAUSTED" in error_text or "429" in error_text:
+                    retry_match = re.search(r"retry in ([0-9.]+)s", error_text, re.IGNORECASE)
+                    retry_msg = f" Retry after about {retry_match.group(1)} seconds." if retry_match else ""
+                    st.error(
+                        "Gemini API quota/rate limit reached (429 RESOURCE_EXHAUSTED)."
+                        f"{retry_msg}"
+                    )
+                    st.info(
+                        "This usually means the API key has no available quota or billing is not enabled. "
+                        "Check Gemini API usage limits and billing for this key, or use another key/project."
+                    )
+                else:
+                    st.error(f"Failed to generate report: {error_text}")
 
 # Display summary
 if "summary" in st.session_state:
