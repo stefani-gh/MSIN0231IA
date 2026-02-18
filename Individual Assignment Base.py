@@ -28,7 +28,7 @@ st.header("📃 Market Research Tool on Wikipedia")
 st.markdown("""How to use this tool?
             1. Search an industry you are interested in in the textbox below and click "Search".
             2. After the search results are done, you can click the results to view the related Wikipedia links.
-            3. If you want a summarised market reserach report, click the "Generate Industry Report"""")
+            3. If you want a summarised market reserach report, click the "Generate Industry Report" """)
 
 retriever = WikipediaRetriever()
 
