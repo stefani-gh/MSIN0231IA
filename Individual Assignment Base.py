@@ -3,6 +3,8 @@ import os
 import re
 from langchain_community.retrievers import WikipediaRetriever
 
+# Last updated by Codex: inline numeric footnotes mode.
+
 # Load from Streamlit Secrets (Streamlit Cloud)
 langsmith_api_key = st.secrets.get("LANGSMITH_API_KEY")
 if langsmith_api_key:
@@ -29,7 +31,7 @@ st.markdown("""
             How to use this tool?
             1. Search an industry you are interested in in the textbox below and click "Search".
             2. After the search results are done, you can click the results to view the related Wikipedia links.
-            3. If you want a summarised market reserach report, click the "Generate Industry Report" 
+            3. If you want a summarised market reserach report, click the "Generate Industry Report." 
             """)
 
 retriever = WikipediaRetriever()
