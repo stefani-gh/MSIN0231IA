@@ -3,8 +3,6 @@ import os
 import re
 from langchain_community.retrievers import WikipediaRetriever
 
-# Last updated by Codex: inline numeric footnotes mode.
-
 # Load from Streamlit Secrets (Streamlit Cloud)
 langsmith_api_key = st.secrets.get("LANGSMITH_API_KEY")
 if langsmith_api_key:
@@ -35,12 +33,14 @@ st.markdown("""
             """)
 
 retriever = WikipediaRetriever(
-    top_k_results=5
+    top_k_results = 5
 )
 
-query = st.text_input("Search Wikipedia", placeholder="Type your industry here")
+with st.form("wiki_search_form", clear_on_submit=False):
+    query = st.text_input("Search Wikipedia", placeholder="Type your industry here")
+    search_submitted = st.form_submit_button("Search")
 
-if st.button("Search"):
+if search_submitted:
     if query:
         try:
             with st.spinner("🔍 Searching Wikipedia..."):
@@ -137,7 +137,13 @@ if "wiki_results" in st.session_state and st.session_state.wiki_results:
 # Display summary
 if "summary" in st.session_state:
     st.write("### 📊 Market Research Summary")
-    st.write(st.session_state.summary)
+    if st.session_state.get("references"):
+        footnote_links = " ".join(
+            [f"[{idx}]({url})" for idx, (_, url) in enumerate(st.session_state.references, 1)]
+        )
+        st.markdown(f"{st.session_state.summary}\n\nSources: {footnote_links}")
+    else:
+        st.write(st.session_state.summary)
     if st.session_state.get("references"):
         st.markdown("### References")
         for idx, (title, url) in enumerate(st.session_state.references, 1):
