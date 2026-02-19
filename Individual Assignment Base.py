@@ -34,7 +34,9 @@ st.markdown("""
             3. If you want a summarised market reserach report, click the "Generate Industry Report." 
             """)
 
-retriever = WikipediaRetriever()
+retriever = WikipediaRetriever(
+    top_k_results=5
+)
 
 query = st.text_input("Search Wikipedia", placeholder="Type your industry here")
 
