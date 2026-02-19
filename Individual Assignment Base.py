@@ -43,6 +43,7 @@ if st.button("Search"):
                 st.session_state.wiki_results = retriever.invoke(query)
                 st.session_state.wiki_query = query
                 st.session_state.pop("summary", None)
+                st.session_state.pop("references", None)
         except Exception as e:
             st.error(f"Error: {str(e)}")
     else:
@@ -92,9 +93,10 @@ if "wiki_results" in st.session_state and st.session_state.wiki_results:
 
                 messages = [
                     SystemMessage(content=(
-                        "You are a professional market research analyst. "
-                        "Summarize the provided content into a concise market research report "
-                        "of no more than 500 words. Focus on key insights, trends, and relevant facts."
+                        "You are a professional market researcher."
+                        "Summarize the provided content from the wikipedia links generated above into a concise market research report"
+                        "No more than 500 words. The report should include Definition and Scope, SWOT analysis of the market, "
+                        "current market trends and insights, key players, relevant facts, conclusions."
                     )),
                     HumanMessage(content=f"Summarize this into a market research report:\n\n{combined_text}")
                 ]
@@ -102,6 +104,15 @@ if "wiki_results" in st.session_state and st.session_state.wiki_results:
                 with st.spinner("Generating market research report with Gemini..."):
                     response = llm.invoke(messages)
                     st.session_state.summary = response.content
+                    references = []
+                    seen_urls = set()
+                    for doc in st.session_state.wiki_results:
+                        title = doc.metadata.get("title", "Untitled")
+                        url = doc.metadata.get("source", "").strip()
+                        if url and url not in seen_urls:
+                            references.append((title, url))
+                            seen_urls.add(url)
+                    st.session_state.references = references
 
             except Exception as e:
                 error_text = str(e)
@@ -123,4 +134,8 @@ if "wiki_results" in st.session_state and st.session_state.wiki_results:
 if "summary" in st.session_state:
     st.write("### 📊 Market Research Summary")
     st.write(st.session_state.summary)
+    if st.session_state.get("references"):
+        st.markdown("### References")
+        for idx, (title, url) in enumerate(st.session_state.references, 1):
+            st.markdown(f"{idx}. [{title}]({url})")
     st.caption(f"Word count: {len(st.session_state.summary.split())} | Powered by Gemini 2.0 Flash")
