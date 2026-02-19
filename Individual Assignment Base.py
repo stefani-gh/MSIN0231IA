@@ -36,11 +36,21 @@ retriever = WikipediaRetriever(
     top_k_results = 5
 )
 
-with st.form("wiki_search_form", clear_on_submit=False):
-    query = st.text_input("Search Wikipedia", placeholder="Type your industry here")
-    search_submitted = st.form_submit_button("Search")
+if "search_submitted" not in st.session_state:
+    st.session_state.search_submitted = False
 
-if search_submitted:
+def submit_search():
+    st.session_state.search_submitted = True
+
+query = st.text_input(
+    "Search Wikipedia",
+    placeholder="Type your industry here",
+    on_change=submit_search
+)
+search_clicked = st.button("Search")
+
+if search_clicked or st.session_state.search_submitted:
+    st.session_state.search_submitted = False
     if query:
         try:
             with st.spinner("🔍 Searching Wikipedia..."):
