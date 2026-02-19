@@ -13,13 +13,14 @@ if langsmith_api_key:
 # Settings of the Market Reserach Tool
 # =============================================================================
 # Sidebar for settings
-st.sidebar.header("⚙️ LLM Setting")
-model = st.sidebar.selectbox("Model", ["OpenAI", "Gemini", "Copilot"])
+st.sidebar.header("⚙️ Setting")
+st.markdown ("""
+             1. Select LLM Model
+             2.Fill in your API key
+             """)
+model = st.sidebar.selectbox("LLM Model", ["OpenAI", "Gemini", "Copilot"])
 gemini_api_key = st.sidebar.text_input("Please enter your  API key", type="password")
 default_gemini_api_key = st.secrets.get("GOOGLE_API_KEY", "")
-
-if model != "Gemini":
-    st.sidebar.info("Only Gemini is currently implemented. Please select Gemini to generate a report.")
 
 # =============================================================================
 # Market Research Tool on Wikipedia 
